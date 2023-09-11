@@ -75,7 +75,7 @@ I wanted to. And I **really** don't want to.
 - [Cloud history sync](https://atuin.sh/docs/commands/sync)
 - [History stats](https://atuin.sh/docs/commands/stats)
 - [Self host Atuin server](https://atuin.sh/docs/self-hosting)
-- [Key binding](https://atuin.sh/docs/config/key-binding)
+- [Key binding](https://atuin.sh/docs/key-binding)
 - [Shell completions](https://atuin.sh/docs/commands/shell-completions)
 
 ## Supported Shells
@@ -275,12 +275,6 @@ atuin init fish | source
 
 to your `is-interactive` block in your `~/.config/fish/config.fish` file
   
-### Fig
-
-Install `atuin` shell plugin in zsh, bash, or fish with [Fig](https://fig.io) in one click. 
-
-<a href="https://fig.io/plugins/shell/atuin" target="_blank"><img src="https://fig.io/badges/install-with-fig.svg" /></a>
-
 ### Nushell
 
 Run in *Nushell*:

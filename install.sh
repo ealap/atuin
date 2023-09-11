@@ -64,18 +64,21 @@ __atuin_install_arch(){
 }
 
 __atuin_install_ubuntu(){
-	echo "Ubuntu detected"
-	# TODO: select correct AARCH too
-	ARTIFACT_URL="https://github.com/atuinsh/atuin/releases/download/$LATEST_VERSION/atuin_${LATEST_VERSION//v/}_amd64.deb"
-
-	TEMP_DEB="$(mktemp)".deb &&
-	curl -Lo "$TEMP_DEB" "$ARTIFACT_URL"
-	if command -v sudo &> /dev/null; then
-		sudo apt install "$TEMP_DEB"
+	if [ "$(dpkg --print-architecture)" = "amd64" ]; then
+		echo "Ubuntu detected"
+		ARTIFACT_URL="https://github.com/atuinsh/atuin/releases/download/$LATEST_VERSION/atuin_${LATEST_VERSION//v/}_amd64.deb"
+		TEMP_DEB="$(mktemp)".deb &&
+		curl -Lo "$TEMP_DEB" "$ARTIFACT_URL"
+		if command -v sudo &> /dev/null; then
+			sudo apt install "$TEMP_DEB"
+		else
+			su -l -c "apt install '$TEMP_DEB'"
+		fi
+		rm -f "$TEMP_DEB"
 	else
-		su -l -c "apt install '$TEMP_DEB'"
+		echo "Ubuntu detected, but not amd64"
+		__atuin_install_unsupported
 	fi
-	rm -f "$TEMP_DEB"
 }
 
 __atuin_install_linux(){
@@ -89,14 +92,15 @@ __atuin_install_linux(){
   else
     OS=$(lsb_release -i | awk '{ print $3 }' | tr '[:upper:]' '[:lower:]')
   fi
-	if [ "$OS" == "arch" ] || [ "$OS" == "manjarolinux" ] || [ "$OS" == "endeavouros" ]; then
-		__atuin_install_arch
-  elif [ "$OS" == "ubuntu" ] || [ "$OS" == "ubuntuwsl" ] || [ "$OS" == "debian" ] || [ "$OS" == "linuxmint" ] || [ "$OS" == "parrot" ] || [ "$OS" == "kali" ] || [ "$OS" == "elementary" ] || [ "$OS" == "pop" ]; then
-		__atuin_install_ubuntu
-	else
-		# TODO: download a binary or smth
-		__atuin_install_unsupported
-	fi
+	case "$OS" in
+		"arch" | "manjarolinux" | "endeavouros")
+			__atuin_install_arch;;
+		"ubuntu" | "ubuntuwsl" | "debian" | "linuxmint" | "parrot" | "kali" | "elementary" | "pop")
+			__atuin_install_ubuntu;;
+		*)
+			# TODO: download a binary or smth
+			__atuin_install_unsupported;;
+	esac
 }
 
 __atuin_install_mac(){
@@ -148,7 +152,7 @@ __atuin_install_cargo(){
 }
 
 __atuin_install_unsupported(){
-	echo "Unknown or unsupported OS"
+	echo "Unknown or unsupported OS or architecture"
 	echo "Please check the README at https://github.com/atuinsh/atuin for manual install instructions"
 	echo "If you have any problems, please open an issue!"
 
@@ -176,13 +180,18 @@ esac
 # TODO: Check which shell is in use
 # Use of single quotes around $() is intentional here
 # shellcheck disable=SC2016
-printf '\neval "$(atuin init zsh)"\n' >> ~/.zshrc
+if ! grep -q "atuin init zsh" ~/.zshrc; then
+  printf '\neval "$(atuin init zsh)"\n' >> ~/.zshrc
+fi
 
-curl https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh -o ~/.bash-preexec.sh
-printf '\n[[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh\n' >> ~/.bashrc
 # Use of single quotes around $() is intentional here
 # shellcheck disable=SC2016
-echo 'eval "$(atuin init bash)"' >> ~/.bashrc
+
+if ! grep -q "atuin init bash" ~/.bashrc; then
+  curl https://raw.githubusercontent.com/rcaloras/bash-preexec/master/bash-preexec.sh -o ~/.bash-preexec.sh
+  printf '\n[[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh\n' >> ~/.bashrc
+  echo 'eval "$(atuin init bash)"' >> ~/.bashrc
+fi
 
 cat << EOF
 

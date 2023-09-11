@@ -166,7 +166,7 @@ filter_mode_shell_up_key_binding = "session"
 
 Defaults to the value specified for filter_mode.
 
-### `workspace`
+### `workspaces`
 
 This flag enables a pseudo filter-mode named "workspace": the filter is automatically
 activated when you are in a git repository. Defaults to false.
@@ -189,6 +189,10 @@ Which style to use. Possible values: `auto`, `full` and `compact`.
 ![full](https://user-images.githubusercontent.com/1710904/161623547-42afbfa7-a3ef-4820-bacd-fcaf1e324969.png)
 
 Defaults to `auto`.
+
+### `invert`
+
+Invert the UI - put the search bar at the top
 
 ### `inline_height`
 
@@ -249,6 +253,20 @@ history_filter = [
    "^innocuous-cmd .*--secret=.+"
 ]
 ```
+
+### secrets_filter
+
+```
+secrets_filter = true
+```
+
+Defaults to true. This matches history against a set of default regex, and will not save it if we get a match. Defaults include
+
+1. AWS key id
+2. Github pat (old and new)
+3. Slack oauth tokens (bot, user)
+4. Slack webhooks
+5. Stripe live/test keys
 
 ## macOS <kbd>Ctrl-n</kbd> key shortcuts
 

@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::Row;
 
+use time::{OffsetDateTime, PrimitiveDateTime};
 use tracing::instrument;
 use wrappers::{DbHistory, DbRecord, DbSession, DbUser};
 
@@ -139,7 +140,7 @@ impl Database for Postgres {
         )
         .bind(user.id)
         .bind(id)
-        .bind(chrono::Utc::now().naive_utc())
+        .bind(OffsetDateTime::now_utc())
         .fetch_all(&self.pool)
         .await
         .map_err(fix_error)?;
@@ -175,8 +176,8 @@ impl Database for Postgres {
     async fn count_history_range(
         &self,
         user: &User,
-        start: chrono::NaiveDateTime,
-        end: chrono::NaiveDateTime,
+        start: PrimitiveDateTime,
+        end: PrimitiveDateTime,
     ) -> DbResult<i64> {
         let res: (i64,) = sqlx::query_as(
             "select count(1) from history
@@ -198,8 +199,8 @@ impl Database for Postgres {
     async fn list_history(
         &self,
         user: &User,
-        created_after: chrono::NaiveDateTime,
-        since: chrono::NaiveDateTime,
+        created_after: OffsetDateTime,
+        since: OffsetDateTime,
         host: &str,
         page_size: i64,
     ) -> DbResult<Vec<History>> {
@@ -247,7 +248,7 @@ impl Database for Postgres {
             .bind(hostname)
             .bind(i.timestamp)
             .bind(data)
-            .execute(&mut tx)
+            .execute(&mut *tx)
             .await
             .map_err(fix_error)?;
         }
@@ -375,7 +376,7 @@ impl Database for Postgres {
             .bind(&i.data.data)
             .bind(&i.data.content_encryption_key)
             .bind(user.id)
-            .execute(&mut tx)
+            .execute(&mut *tx)
             .await
             .map_err(fix_error)?;
         }
