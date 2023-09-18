@@ -157,6 +157,7 @@ pub struct Settings {
     pub search_mode: SearchMode,
     pub filter_mode: FilterMode,
     pub filter_mode_shell_up_key_binding: Option<FilterMode>,
+    pub search_mode_shell_up_key_binding: Option<SearchMode>,
     pub shell_up_key_binding: bool,
     pub inline_height: u16,
     pub invert: bool,
@@ -174,6 +175,9 @@ pub struct Settings {
     pub secrets_filter: bool,
     pub workspaces: bool,
     pub ctrl_n_shortcuts: bool,
+
+    pub network_connect_timeout: u64,
+    pub network_timeout: u64,
 
     // This is automatically loaded when settings is created. Do not set in
     // config! Keep secrets and settings apart.
@@ -371,6 +375,8 @@ impl Settings {
             .set_default("workspaces", false)?
             .set_default("ctrl_n_shortcuts", false)?
             .set_default("secrets_filter", true)?
+            .set_default("network_connect_timeout", 5)?
+            .set_default("network_timeout", 30)?
             .add_source(
                 Environment::with_prefix("atuin")
                     .prefix_separator("_")

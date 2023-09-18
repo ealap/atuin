@@ -52,7 +52,7 @@ directories = { workspace = true }
 indicatif = "0.17.5"
 serde = { workspace = true }
 serde_json = { workspace = true }
-crossterm = { version = "0.26", features = ["use-dev-tty"] }
+crossterm = { version = "0.27", features = ["use-dev-tty"] }
 unicode-width = "0.1"
 itertools = { workspace = true }
 tokio = { workspace = true }
@@ -70,7 +70,7 @@ tiny-bip39 = "1"
 futures-util = "0.3"
 fuzzy-matcher = "0.3.7"
 colored = "2.0.4"
-ratatui = "0.22"
+ratatui = "0.23"
 tracing = "0.1"
 
 
